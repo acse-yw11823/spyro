@@ -16,14 +16,14 @@ model = {}
 
 model["opts"] = {
     "method": "KMV",  # either CG or KMV
-    "quadratrue": "KMV",  # Equi or KMV
+    "quadrature": "KMV",  # Equi or KMV
     "degree": 5,  # p order
     "dimension": 2,  # dimension
     "regularization": True,  # regularization is on?
     "gamma": 1.0e-6,  # regularization parameter
 }
 model["parallelism"] = {
-    "type": "automatic",
+    "type": "spatial",
 }
 model["mesh"] = {
     "Lz": 3.5,  # depth in km - always positive
