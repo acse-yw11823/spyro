@@ -1,5 +1,5 @@
 from firedrake import *
-from firedrake.assemble import create_assembly_callable
+from firedrake.assemble import get_assembler
 
 from ..domains import quadrature, space
 from ..pml import damping
@@ -253,7 +253,7 @@ def gradient(
             },
         )
 
-    assembly_callable = create_assembly_callable(rhs_, tensor=B)
+    assembly_callable = get_assembler(rhs_, tensor=B).assemble
 
     rhs_forcing = Function(V)  # forcing term
     if save_adjoint:
