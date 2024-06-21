@@ -1,5 +1,5 @@
 from firedrake import *
-from firedrake.assemble import get_assembler
+from firedrake.assemble import OneFormAssembler
 
 from ..domains import quadrature, space
 from ..pml import damping
@@ -253,7 +253,7 @@ def gradient(
             },
         )
 
-    assembly_callable = get_assembler(rhs_, tensor=B).assemble
+    assembly_callable = OneFormAssembler(rhs_).assemble
 
     rhs_forcing = Function(V)  # forcing term
     if save_adjoint:
@@ -263,7 +263,7 @@ def gradient(
         rhs_forcing.assign(0.0)
         # Solver - main equation - (I)
         # B = assemble(rhs_, tensor=B)
-        assembly_callable()
+        assembly_callable(tensor=B)
 
         f = receivers.apply_receivers_as_source(rhs_forcing, residual, step)
         # add forcing term to solve scalar pressure

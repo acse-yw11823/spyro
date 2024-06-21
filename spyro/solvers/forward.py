@@ -1,5 +1,5 @@
 from firedrake import *
-from firedrake.assemble import get_assembler
+from firedrake.assemble import OneFormAssembler
 
 from .. import utils
 from ..domains import quadrature, space
@@ -243,13 +243,13 @@ def forward(
     usol_recv = []
     save_step = 0
 
-    assembly_callable = get_assembler(rhs_, tensor=B).assemble
+    assembly_callable = OneFormAssembler(rhs_).assemble
 
     rhs_forcing = Function(V)
 
     for step in range(nt):
         rhs_forcing.assign(0.0)
-        assembly_callable()
+        assembly_callable(tensor=B)
         f = excitations.apply_source(rhs_forcing, wavelet[step])
         B0 = B.sub(0)
         B0 += f
