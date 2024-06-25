@@ -290,7 +290,12 @@ def gradient(
         if step % fspool == 0:
             # compute the gradient increment
             uuadj.assign(u_np1)
-            uufor.assign(guess.pop())
+            if guess:
+                uufor.assign(guess.pop())
+            else:
+                print("Error: guess list is empty")
+
+            # uufor.assign(guess.pop())
 
             grad_solver.solve()
             dJ += gradi

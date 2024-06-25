@@ -15,9 +15,9 @@ model["mesh"] = {
     "Lz": 3.5,  # depth in km - always positive
     "Lx": 17.0,  # width in km - always positive
     "Ly": 0.0,  # thickness in km - always positive
-    "meshfile": "meshes/marmousi_exact.msh",
+    "meshfile": "/Users/yw11823/ACSE/irp/spyro/FWI_2D_DATA/meshes/marmousi_exact.msh",
     "initmodel": "not_used.hdf5",
-    "truemodel": "velocity_models/marmousi_exact.hdf5",
+    "truemodel": "/Users/yw11823/ACSE/irp/spyro/FWI_2D_DATA/velocity_models/marmousi_exact.hdf5",
 }
 model["BCs"] = {
     "status": True,  # True or false
@@ -42,7 +42,7 @@ model["acquisition"] = {
 model["timeaxis"] = {
     "t0": 0.0,  # Initial time for event
     "tf": 6.00,  # Final time for event
-    "dt": 0.001,
+    "dt": 0.0001,
     "amplitude": 1,  # the Ricker has an amplitude of 1.
     "nspool": 100,  # how frequently to output solution to pvds
     "fspool": 99999,  # how frequently to save solution to RAM
@@ -57,6 +57,6 @@ wavelet = spyro.full_ricker_wavelet(
     tf=model["timeaxis"]["tf"],
     freq=model["acquisition"]["frequency"],
 )
-p, p_r = spyro.solvers.forward(model, mesh, comm, vp, sources, wavelet, receivers)
-spyro.plots.plot_shots(model, comm, p_r, vmin=-1e-3, vmax=1e-3)
+p, p_r = spyro.solvers.forward(model, mesh, comm, vp, sources, wavelet, receivers, output=True)
+# spyro.plots.plot_shots(model, comm, p_r, vmin=-1e-3, vmax=1e-3)
 spyro.io.save_shots(model, comm, p_r)
