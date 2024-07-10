@@ -29,9 +29,9 @@ model["mesh"] = {
     "Lz": 5.175,  # depth in km - always positive
     "Lx": 7.50,  # width in km - always positive
     "Ly": 7.50,  # thickness in km - always positive
-    "meshfile": "meshes/overthrust_3D_true_model.msh",
-    "initmodel": "velocity_models/overthrust_3D_guess_model.hdf5",
-    "truemodel": "velocity_models/overthrust_3D_true_model.hdf5",
+    "meshfile": "/Users/yw11823/ACSE/irp/spyro/FWI_3D_DATA/meshes/overthrust_3D_true_model.msh",
+    "initmodel": "/Users/yw11823/ACSE/irp/spyro/FWI_3D_DATA/velocity_models/overthrust_3D_guess_model.hdf5",
+    "truemodel": "/Users/yw11823/ACSE/irp/spyro/FWI_3D_DATA/velocity_models/overthrust_3D_true_model.hdf5",
 }
 model["BCs"] = {
     "status": True,  # True or false
@@ -43,6 +43,9 @@ model["BCs"] = {
     "lz": 0.75,  # thickness of the PML in the z-direction (km) - always positive
     "lx": 0.75,  # thickness of the PML in the x-direction (km) - always positive
     "ly": 0.75,  # thickness of the PML in the y-direction (km) - always positive
+}
+model["aut_dif"] = {
+    "status": False,
 }
 model["acquisition"] = {
     "source_type": "Ricker",
@@ -65,7 +68,7 @@ comm = spyro.utils.mpi_init(model)
 mesh, V = spyro.io.read_mesh(model, comm)
 vp = spyro.io.interpolate(model, mesh, V, guess=False)
 if comm.ensemble_comm.rank == 0:
-    File("true_velocity.pvd", comm=comm.comm).write(vp)
+    File("true_velocity_3d.pvd", comm=comm.comm).write(vp)
 sources = spyro.Sources(model, mesh, V, comm)
 receivers = spyro.Receivers(model, mesh, V, comm)
 wavelet = spyro.full_ricker_wavelet(

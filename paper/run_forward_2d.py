@@ -1,5 +1,9 @@
 from firedrake import File
 import spyro
+import sys
+sys.path.append("/Users/yw11823/ACSE/irp/spyro")
+import os
+os.environ["OMP_NUM_THREADS"] = "1"
 
 model = {}
 
@@ -10,15 +14,15 @@ model["opts"] = {
     "dimension": 2,  # dimension
 }
 model["parallelism"] = {
-    "type": "automatic",
+    "type": "spatial",
 }
 model["mesh"] = {
     "Lz": 3.5,  # depth in km - always positive
     "Lx": 17.0,  # width in km - always positive
     "Ly": 0.0,  # thickness in km - always positive
-    "meshfile": "meshes/marmousi_exact.msh",
+    "meshfile": "/Users/yw11823/ACSE/irp/spyro/FWI_2D_DATA/meshes/marmousi_exact.msh",
     "initmodel": "not_used.hdf5",
-    "truemodel": "velocity_models/marmousi_exact.hdf5",
+    "truemodel": "/Users/yw11823/ACSE/irp/spyro/FWI_2D_DATA/velocity_models/marmousi_exact.hdf5",
 }
 model["BCs"] = {
     "status": True,  # True or false
@@ -33,12 +37,12 @@ model["BCs"] = {
 }
 model["acquisition"] = {
     "source_type": "Ricker",
-    "num_sources": 40,
-    "source_pos": spyro.create_transect((-0.01, 1.0), (-0.01, 15.0), 40),
+    "num_sources": 3,
+    "source_pos": spyro.create_transect((-0.01, 1.0), (-0.01, 15.0), 3),
     "frequency": 5.0,
     "delay": 1.0,
-    "num_receivers": 500,
-    "receiver_locations": spyro.create_transect((-0.10, 0.1), (-0.10, 17.0), 500),
+    "num_receivers": 101,
+    "receiver_locations": spyro.create_transect((-0.10, 0.1), (-0.10, 17.0), 101),
 }
 model["timeaxis"] = {
     "t0": 0.0,  # Initial time for event
@@ -60,6 +64,6 @@ wavelet = spyro.full_ricker_wavelet(
     tf=model["timeaxis"]["tf"],
     freq=model["acquisition"]["frequency"],
 )
-p, p_r = spyro.solvers.forward(model, mesh, comm, vp, sources, wavelet, receivers)
+p, p_r = spyro.solvers.forward(model, mesh, comm, vp, sources, wavelet, receivers, source_num = 10)
 spyro.plots.plot_shots(model, comm, p_r, vmin=-1e-3, vmax=1e-3)
-spyro.io.save_shots(model, comm, p_r)
+spyro.io.save_shots(model, comm, p_r, file_name = "M2d")

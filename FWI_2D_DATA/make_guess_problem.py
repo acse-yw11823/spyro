@@ -2,7 +2,7 @@ import meshio
 from SeismicMesh import *
 import segyio
 
-fname = "vp_guess4.segy"
+fname = "/Users/yw11823/ACSE/irp/spyro/FWI_2D_DATA/vp_guess4.segy"
 bbox = (-3500.0, 0.0, 0.0, 17000.0)
 cpwl = 3.08 #2.22 #1.69 #$20 #7.02 #3.96 #2.67 #2.028
 freq = 5.0
