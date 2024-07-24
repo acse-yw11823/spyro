@@ -119,7 +119,7 @@ def timedependentSource(model, t, freq=None, amp=1, delay=1.5):
         raise ValueError("source not implemented")
 
 
-def ricker_wavelet(t, freq, amp=1.0, delay=1.5):
+def ricker_wavelet(t, freq, amp=1.0, delay=0):
     """Creates a Ricker source function with a
     delay in term of multiples of the distance
     between the minimums.
@@ -141,7 +141,8 @@ def ricker_wavelet(t, freq, amp=1.0, delay=1.5):
     float
         Value of the wavelet at time t
     """
-    t = t - delay * math.sqrt(6.0) / (math.pi * freq)
+    # t = t - delay * math.sqrt(6.0) / (math.pi * freq)
+    t = t - delay
     return (
         amp
         * (1.0 - (1.0 / 2.0) * (2.0 * math.pi * freq) * (2.0 * math.pi * freq) * t * t)
@@ -151,7 +152,7 @@ def ricker_wavelet(t, freq, amp=1.0, delay=1.5):
     )
 
 
-def full_ricker_wavelet(dt, tf, freq, amp=1.0, cutoff=None):
+def full_ricker_wavelet(dt, tf, freq, amp=1.0, cutoff=None, delay=0):
     """Compute the Ricker wavelet optionally applying low-pass filtering
     using cutoff frequency in Hertz.
 
@@ -177,7 +178,7 @@ def full_ricker_wavelet(dt, tf, freq, amp=1.0, cutoff=None):
     time = 0.0
     full_wavelet = np.zeros((nt,))
     for t in range(nt):
-        full_wavelet[t] = ricker_wavelet(time, freq, amp)
+        full_wavelet[t] = ricker_wavelet(time, freq, amp, delay)
         time += dt
     if cutoff is not None:
         fs = 1.0 / dt
