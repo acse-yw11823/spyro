@@ -1,9 +1,9 @@
 from firedrake import File
 import spyro
-import sys
-sys.path.append("/Users/yw11823/ACSE/irp/spyro")
-import os
-os.environ["OMP_NUM_THREADS"] = "1"
+# import sys
+# sys.path.append("/Users/yw11823/ACSE/irp/spyro")
+# import os
+# os.environ["OMP_NUM_THREADS"] = "1"
 
 model = {}
 
@@ -46,7 +46,7 @@ model["acquisition"] = {
 }
 model["timeaxis"] = {
     "t0": 0.0,  # Initial time for event
-    "tf": 5.00,  # Final time for event
+    "tf": 2.00,  # Final time for event
     "dt": 0.00025,
     "amplitude": 1,  # the Ricker has an amplitude of 1.
     "nspool": 100,  # how frequently to output solution to pvds

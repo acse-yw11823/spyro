@@ -15,11 +15,12 @@ from mpi4py import MPI
 import os
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-
+import time
 import spyro
 
-model = {}
-
+# 创建文件夹
+import os
+os.makedirs('shots', exist_ok=True)
 
 model = {}
 
@@ -61,19 +62,17 @@ model["BCs"] = {
 
 model["acquisition"] = {
     "source_type": "Ricker",
-    "source_pos": [(-0.1, 0.75)],
+    "source_pos":  [(0.02, 0.5)],
     "frequency": 8.0,
     "delay": 1.0,
-    "receiver_locations": spyro.create_transect(
-        (-0.10, 0.1), (-0.10, 1.4), 100
-    ),
+    "receiver_locations": spyro.create_transect((0.98, 0.0), (0.98, 1.0), 101),
 }
 
 # Simulate for 2.0 seconds.
 model["timeaxis"] = {
     "t0": 0.0,  # Initial time for event
-    "tf": 2.00,  # Final time for event
-    "dt": 0.0005,  # timestep size
+    "tf": 1.00,  # Final time for event
+    "dt": 0.00004082,  # timestep size
     "amplitude": 1,  # the Ricker has an amplitude of 1.
     "nspool": 100,  # how frequently to output solution to pvds
     "fspool": 100,  # how frequently to save solution to RAM
@@ -81,35 +80,45 @@ model["timeaxis"] = {
 
 # Create a simple mesh of a rectangle ∈ [1 x 1] km
 mesh = RectangleMesh(100, 100, 1.0, 1.0)
+# mesh = UnitSquareMesh(200, 200)
 comm = spyro.utils.mpi_init(model)
 element = spyro.domains.space.FE_method(mesh, model["opts"]["method"], model["opts"]["degree"])
 V = FunctionSpace(mesh, element)
 
 # Create a simple two-layer seismic velocity model `vp`.
 x, y = SpatialCoordinate(mesh)
-radius = 0.3
+radius = 0.15
 center_x, center_y = 0.5, 0.5
 condition = (x - center_x)**2 + (y - center_y)**2 < radius**2
 velocity = conditional(condition, 3.0, 2.5)
 vp = Function(V, name="velocity").interpolate(velocity)
-File("simple_velocity_cicle.pvd").write(vp)
+File("ex1_tria_mesh.pvd").write(vp)
 
 # Use the smoothed model for FWI
 # Now we instantiate both the receivers and source objects.
 sources = spyro.Sources(model, mesh, V, comm)
 receivers = spyro.Receivers(model, mesh, V, comm)
 
+# dt=model["timeaxis"]["dt"]
+# tf=model["timeaxis"]["tf"]
 # Create a wavelet to force the simulation
-wavelet = spyro.full_ricker_wavelet(dt=0.0005, tf=2.0, freq=8.0)
+wavelet = spyro.full_ricker_wavelet(model["timeaxis"]["dt"], tf=1, freq=10.0)
+
 # 模拟波场
+# Calculate running time
+start_time = time.time()
 p_field, p_at_recv = spyro.solvers.forward(model, mesh, comm, vp, sources, wavelet, receivers)
+end_time = time.time()
+running_time = end_time - start_time
+print("Running Time: {:.2f} seconds".format(running_time))
 
-# Visualize the shot record
-# 在地震波模拟中生成接收器记录（shot records）的可视化图像
-spyro.plots.plot_shots(model, comm, p_at_recv, file_name="r")
+# # Visualize the shot record
+# # 在地震波模拟中生成接收器记录（shot records）的可视化图像
+# spyro.plots.plot_shots(model, comm, p_at_recv, file_name="shot_record")
 
-# Save the shot (a Numpy array) as a pickle for other use.
-spyro.io.save_shots(model, comm, p_at_recv, file_name="r")
+# # Save the shot (a Numpy array) as a pickle for other use.
+# spyro.io.save_shots(model, comm, p_at_recv, file_name="rec_")
+# spyro.io.save_shots(model, comm, p_field, file_name="p_field_")
 
-# Load the shot
-my_shot = spyro.io.load_shots(model, comm)
+# # Load the shot
+# my_shot = spyro.io.load_shots(model, comm)

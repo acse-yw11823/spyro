@@ -250,3 +250,7 @@ def full_ricker_wavelet(dt, tf, freq, amp=1.0, cutoff=None):
 # def delta_expr_3d(x0, z, x, y, sigma_x=2000.0):
 #     sigma_x = Constant(sigma_x)
 #     return exp(-sigma_x * ((z - x0[0]) ** 2 + (x - x0[1]) ** 2 + (y - x0[2]) ** 2))
+
+
+
+
